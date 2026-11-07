@@ -321,4 +321,3 @@ Do not expose your n8n webhook or Ollama service publicly without proper securit
 
 Developed as a personal CS2 demo analysis project.
 
-**AimTrace – Every shot leaves a trace.**
