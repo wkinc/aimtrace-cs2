@@ -1,0 +1,4 @@
+[server]
+address = "localhost"
+headless = true
+maxUploadSize = 5000

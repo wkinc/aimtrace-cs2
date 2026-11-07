@@ -1,0 +1,39 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+.venv312/
+venv/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# CS2 demos
+demos/*
+!demos/.gitkeep
+*.dem
+
+# Analysis results
+outputs/*
+!outputs/.gitkeep
+reports/
+
+# Cache
+cache/*
+!cache/.gitkeep
+
+# Temporary files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
