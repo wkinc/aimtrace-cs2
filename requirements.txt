@@ -1,0 +1,9 @@
+# AimTrace Python dependencies
+
+awpy==3.1.1
+numpy
+polars
+streamlit
+plotly
+requests
+openpyxl
