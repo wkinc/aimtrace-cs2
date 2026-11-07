@@ -45,7 +45,7 @@ You do not need Docker, n8n or Ollama to use the main analysis features.
 Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/aimtrace-cs2.git
+git clone https://github.com/wkinc/aimtrace-cs2.git
 ```
 
 Enter the project folder:
