@@ -71,7 +71,7 @@ You also need a CS2 demo file to analyse.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/aimtrace-cs2.git
+git clone https://github.com/wkinc/aimtrace-cs2.git
 cd aimtrace-cs2
 ```
 
