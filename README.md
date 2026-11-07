@@ -1,39 +1,305 @@
-# AimTrace – CS2 Demo Analysis
+# AimTrace - CS2 Demo Analysis
 
-**Every shot leaves a trace.**
+AimTrace is a tool that analyses Counter-Strike 2 (CS2) demo files. It uses Python to collect match data and review player aim behaviour.
 
-AimTrace is a Counter-Strike 2 (CS2) demo analysis project built with Python. It analyses player behaviour, aim patterns and kill statistics to help identify unusual gameplay patterns.
+It also supports an optional AI report feature using n8n and Ollama.
 
-It also uses n8n and Ollama to generate AI-assisted reports from the analysis results.
-
-**Important:** AimTrace is an analysis tool, not an anti-cheat system. A high suspicion score does not prove that a player is cheating. All results require manual review.
+The goal is to help players understand their gameplay through data. AimTrace is **not a cheat detector** and does not prove that a player is cheating.
 
 ## Features
 
-- Parse CS2 demo files (`.dem`).
-- Analyse player kill statistics.
-- Measure crosshair error before kills.
-- Analyse aim speed and time on target.
-- Calculate statistical suspicion scores.
-- Compare player statistics against other players in the analysed demos.
-- Display results using a Streamlit dashboard.
-- Generate AI reports using Ollama and n8n.
-- Save reports in timestamped folders.
-- Open previous analysis results.
+- Analyse CS2 demo files.
+- Review player performance and statistics.
+- Calculate aim-related statistics.
+- Review player aim behaviour before kills.
+- Compare players in the analysed demo.
+- View results in a Streamlit dashboard.
+- Generate optional AI reports using n8n and Ollama.
+- Save analysis results for later review.
 
-## Technology Stack
+## Technology
 
-| Technology | Purpose |
+- Python
+- Streamlit
+- Polars
+- NumPy
+- Awpy
+- Plotly
+- n8n (optional)
+- Ollama (optional)
+
+## Requirements
+
+Before installing AimTrace, prepare the following:
+
+- Python 3.12
+- Git
+- Counter-Strike 2 demo file (`.dem`)
+- Docker Desktop (optional, for n8n)
+- Ollama (optional, for AI reports)
+
+You do not need Docker, n8n or Ollama to use the main analysis features.
+
+## 1. Download AimTrace
+
+Clone the repository:
+
+```bash
+git clone https://github.com/YOUR_USERNAME/aimtrace-cs2.git
+```
+
+Enter the project folder:
+
+```bash
+cd aimtrace-cs2
+```
+
+## 2. Set up Python
+
+Create a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Activate it on Windows:
+
+```powershell
+.venv\Scripts\activate
+```
+
+On macOS or Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+Install the required packages:
+
+```bash
+pip install -r requirements.txt
+```
+
+## 3. Add CS2 demo files
+
+Place your CS2 demo files (`.dem`) inside the `demos/` folder.
+
+Example:
+
+```text
+aimtrace-cs2/
+└── demos/
+    └── match.dem
+```
+
+You can also use the dashboard to upload a demo if the upload feature is available in your version.
+
+**Note:** Demo files are not included in this repository. Please use your own demo files.
+
+## 4. Run AimTrace
+
+Start the Streamlit dashboard:
+
+```bash
+python -m streamlit run app.py
+```
+
+Open the local address shown in your terminal. It is usually:
+
+```text
+http://localhost:8501
+```
+
+Follow the dashboard instructions to analyse your demo.
+
+## 5. Optional: Set up AI reports
+
+AimTrace can use n8n and Ollama to generate AI reports from the analysis results.
+
+This feature is optional. The main analysis features can work without it.
+
+### Step 1: Install Ollama
+
+Download Ollama from:
+
+https://ollama.com/
+
+After installation, open a terminal and download the model:
+
+```bash
+ollama pull qwen3:8b
+```
+
+Make sure Ollama is running.
+
+You can check it with:
+
+```bash
+ollama list
+```
+
+### Step 2: Install n8n using Docker
+
+Install Docker Desktop:
+
+https://www.docker.com/products/docker-desktop/
+
+The repository includes a `docker-compose.yml` file.
+
+Start n8n from the AimTrace project folder:
+
+```bash
+docker compose up -d
+```
+
+Open n8n:
+
+```text
+http://localhost:5678
+```
+
+Create your own n8n account and complete the initial setup.
+
+To stop n8n:
+
+```bash
+docker compose down
+```
+
+Your n8n workflows and settings are stored in a Docker volume, so they remain after the container stops.
+
+### Step 3: Configure your timezone
+
+The Docker Compose setup uses UTC as its default timezone. You can change it to your local timezone.
+
+Create a file named `.env` in the same folder as `docker-compose.yml`.
+
+Add your timezone:
+
+```env
+GENERIC_TIMEZONE=Asia/Kuala_Lumpur
+```
+
+Examples:
+
+| Location | Timezone |
 |---|---|
-| Python | Main programming language |
-| AWPy | CS2 demo parsing |
-| Polars | Data processing |
-| NumPy | Numerical calculations |
-| Streamlit | Dashboard |
-| Plotly | Data visualisation |
-| n8n | AI workflow automation |
-| Ollama | Local AI model |
-| Qwen3 8B | AI report generation |
+| Malaysia | `Asia/Kuala_Lumpur` |
+| New York | `America/New_York` |
+| Los Angeles | `America/Los_Angeles` |
+| London | `Europe/London` |
+| Tokyo | `Asia/Tokyo` |
+
+Make sure your `docker-compose.yml` uses the `GENERIC_TIMEZONE` variable for both `TZ` and `GENERIC_TIMEZONE`.
+
+After changing the timezone, restart n8n:
+
+```bash
+docker compose down
+docker compose up -d
+```
+
+### Step 4: Install n8n without Docker (Alternative)
+
+If you do not want to use Docker, you can install n8n using npm.
+
+First, install Node.js:
+
+https://nodejs.org/
+
+Then install n8n:
+
+```bash
+npm install n8n -g
+```
+
+Start n8n:
+
+```bash
+n8n start
+```
+
+You can also start it without a global installation:
+
+```bash
+npx n8n
+```
+
+Open:
+
+```text
+http://localhost:5678
+```
+
+For more installation options, check the official n8n documentation:
+
+https://docs.n8n.io/hosting/installation/
+
+### Step 5: Create the n8n workflow
+
+Create a new workflow in n8n with these nodes:
+
+1. **Webhook** - receives analysis data from AimTrace.
+2. **Basic LLM Chain** - sends the data to the AI model.
+3. **Ollama Chat Model** - connects to your local Ollama model.
+4. **Respond to Webhook** - sends the AI response back to AimTrace.
+
+Connect the nodes correctly and configure the Ollama model.
+
+For the Ollama connection, use the following base URL:
+
+**If n8n runs in Docker:**
+
+```text
+http://host.docker.internal:11434
+```
+
+**If n8n runs directly on your computer:**
+
+```text
+http://localhost:11434
+```
+
+Select your downloaded model, such as `qwen3:8b`.
+
+Configure the Webhook node:
+
+- HTTP Method: `POST`
+- Respond: `Using Respond to Webhook Node`
+
+Make sure the workflow returns an AI response in the expected format.
+
+### Step 6: Connect AimTrace to n8n
+
+In your n8n Webhook node, copy the **Production URL**.
+
+Publish your workflow before using the Production URL.
+
+Set the webhook URL as an environment variable.
+
+On Windows PowerShell:
+
+```powershell
+[Environment]::SetEnvironmentVariable(
+    "AIMTRACE_N8N_WEBHOOK",
+    "YOUR_N8N_PRODUCTION_WEBHOOK_URL",
+    "User"
+)
+```
+
+On macOS or Linux:
+
+```bash
+export AIMTRACE_N8N_WEBHOOK="YOUR_N8N_PRODUCTION_WEBHOOK_URL"
+```
+
+Replace the example URL with your own Production URL.
+
+Restart your terminal or application after setting the variable.
+
+AimTrace will use this URL to send analysis data to n8n.
+
+**Important:** Do not upload your private webhook URL, API keys or passwords to GitHub.
 
 ## Project Structure
 
@@ -45,279 +311,93 @@ aimtrace-cs2/
 │   └── n8n_client.py
 │
 ├── demos/
-├── outputs/
 ├── cache/
+├── outputs/
+├── reports/
+│
+├── .streamlit/
+│   └── config.toml
 │
 ├── app.py
 ├── pipeline.py
+├── analyze_aim.py
+├── analyze_demo.py
+├── analyze_movement.py
+├── export_demo.py
+├── review_aim.py
+├── run_analysis.py
+│
+├── docker-compose.yml
 ├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
 
-## Requirements
+Some folders are created automatically when AimTrace runs.
 
-Before starting, install:
+## Analysis Results
 
-- Python 3.12
-- Git
-- Ollama
-- Docker Desktop (optional, for running n8n)
+AimTrace saves analysis results in the output folders.
 
-You also need a CS2 demo file to analyse.
+Depending on the analysis, results may include:
 
-## Installation
+- Player scores
+- Kill-related features
+- Aim curves
+- Analysis settings
+- AI-generated reports
 
-### 1. Clone the repository
+Each analysis can have its own output folder to keep previous results separate.
+
+## Important Notes
+
+- AimTrace is a learning and analysis project.
+- Its scores are based on the data available in the analysed demos.
+- A high score does not mean a player is cheating.
+- Results can be affected by demo quality, player behaviour and other factors.
+- AI reports are generated from the available analysis data. They may not always be correct.
+- Do not share private demo files or personal player information without permission.
+- Users are responsible for their own Ollama and n8n setup.
+
+## Troubleshooting
+
+**Streamlit does not start**
+
+Check that your virtual environment is active and the required packages are installed.
 
 ```bash
-git clone https://github.com/wkinc/aimtrace-cs2.git
-cd aimtrace-cs2
+pip install -r requirements.txt
 ```
 
-### 2. Create a Python virtual environment
+**Ollama connection failed**
 
-Windows PowerShell:
+Make sure Ollama is running and the selected model is installed.
 
-```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-### 3. Install Python dependencies
-
-```powershell
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
-## Ollama Setup
-
-AimTrace uses Ollama to run the AI model locally.
-
-1. Install Ollama from https://ollama.com/
-2. Open PowerShell.
-3. Download the model:
-
-```powershell
-ollama pull qwen3:8b
-```
-
-4. Make sure Ollama is running.
-
-Check installed models:
-
-```powershell
+```bash
 ollama list
 ```
 
-## n8n Setup
+**n8n webhook does not work**
 
-n8n connects AimTrace to Ollama and manages the AI report workflow.
+Check that:
 
-You can run n8n using Docker or install it without Docker.
+- Your n8n workflow is published.
+- You copied the Production URL.
+- Your `AIMTRACE_N8N_WEBHOOK` variable is correct.
+- Your n8n and Ollama services are running.
 
-### Option A: Docker Installation
+**Demo file cannot be analysed**
 
-1. Install Docker Desktop.
-2. Start Docker Desktop.
-3. Run n8n:
-
-```powershell
-docker volume create n8n_data
-
-docker run -it --rm --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n
-```
-
-4. Open:
-
-```text
-http://localhost:5678
-```
-
-5. Create or import the AimTrace n8n workflow.
-
-### Option B: Without Docker
-
-If you do not want to use Docker, you can run n8n directly with Node.js and npm.
-
-1. Install Node.js and npm.
-2. Open PowerShell.
-3. Install n8n:
-
-```powershell
-npm install n8n -g
-```
-
-4. Start n8n:
-
-```powershell
-n8n start
-```
-
-5. Open:
-
-```text
-http://localhost:5678
-```
-
-You can also try n8n without a global installation:
-
-```powershell
-npx n8n
-```
-
-Check the current n8n installation documentation for version requirements and installation changes.
-
-### Configure the n8n Workflow
-
-The workflow should contain:
-
-1. Webhook
-2. Basic LLM Chain
-3. Ollama Chat Model
-4. Respond to Webhook
-
-Connections:
-
-```text
-Webhook
-   |
-   v
-Basic LLM Chain
-   |
-   v
-Respond to Webhook
-
-Ollama Chat Model
-   |
-   +---- Connected to Basic LLM Chain Model input
-```
-
-Configure the Webhook node:
-
-- HTTP Method: POST
-- Respond: Using Respond to Webhook Node
-
-Configure the Ollama Chat Model:
-
-- Model: qwen3:8b
-- Docker n8n: `http://host.docker.internal:11434`
-- Non-Docker n8n: `http://localhost:11434`
-
-Make sure your workflow is published and use its Production Webhook URL.
-
-## Connect AimTrace to n8n
-
-AimTrace uses an environment variable to store the webhook URL.
-
-Windows PowerShell:
-
-```powershell
-[Environment]::SetEnvironmentVariable("AIMTRACE_N8N_WEBHOOK", "YOUR_PRODUCTION_WEBHOOK_URL", "User")
-```
-
-Restart your terminal after setting the variable.
-
-Check the variable:
-
-```powershell
-echo $env:AIMTRACE_N8N_WEBHOOK
-```
-
-Do not upload your personal webhook URL to GitHub.
-
-## Run AimTrace
-
-Activate your Python environment:
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-Start the dashboard:
-
-```powershell
-python -m streamlit run app.py
-```
-
-Then:
-
-1. Open the Streamlit dashboard.
-2. Upload a CS2 demo file or select one from the `demos` folder.
-3. Adjust the analysis settings if needed.
-4. Click **Run Analysis**.
-5. Wait for the CS2 analysis and AI report.
-6. View the AI report in the dashboard.
-
-## Output Files
-
-Each analysis is saved in its own timestamped folder.
-
-Example:
-
-```text
-outputs/
-└── 2026-11-07_161059/
-    ├── player_scores.csv
-    ├── kill_features.parquet
-    ├── aim_curves.parquet
-    ├── settings.json
-    └── ai_analysis.json
-```
-
-| File | Description |
-|---|---|
-| player_scores.csv | Player statistics and suspicion scores |
-| kill_features.parquet | Individual kill analysis |
-| aim_curves.parquet | Aim movement data |
-| settings.json | Settings used for the analysis |
-| ai_analysis.json | AI-generated report |
-
-## Demo Files
-
-Demo files are not included in this repository.
-
-Users must provide their own CS2 `.dem` files.
-
-This keeps the repository smaller and avoids sharing personal gameplay data.
-
-Place your demo files inside:
-
-```text
-demos/
-```
-
-Alternatively, upload a demo directly through the Streamlit dashboard.
-
-## Limitations
-
-- Results depend on the demos used for comparison.
-- Small player samples can make statistical scores less reliable.
-- Demo sampling may miss some movements between sampled ticks.
-- High scores can have legitimate explanations.
-- AI reports are based on the statistics provided to the model.
-- AI-generated explanations may contain errors and must be checked.
-- AimTrace does not automatically determine whether a player is cheating.
-
-## Privacy
-
-AimTrace can use a local Ollama model for AI report generation.
-
-When n8n and Ollama are running locally, the analysis data is sent to your local services.
-
-Do not expose your n8n webhook or Ollama service publicly without proper security controls.
+Make sure the file is a valid CS2 demo file and that it is placed in the correct folder.
 
 ## Future Improvements
 
-- Better player filtering and comparison.
-- More detailed aim behaviour analysis.
-- Improved AI reports.
-- Better visualisation of suspicious moments.
-- Additional statistical features.
-- Improved dashboard usability.
+- Improve aim behaviour analysis.
+- Add more player comparison features.
+- Improve the dashboard and filtering.
+- Improve AI report quality.
+- Support more analysis methods.
 
-## Author
+## License
 
-Developed as a personal CS2 demo analysis project.
-
+Add your chosen open-source license here before publishing the project.
