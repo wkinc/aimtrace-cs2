@@ -170,15 +170,14 @@ Your n8n workflows and settings are stored in a Docker volume, so they remain af
 
 ### Step 3: Configure your timezone
 
-The Docker Compose setup uses UTC as its default timezone. You can change it to your local timezone.
+AimTrace's Docker Compose setup does not force a specific timezone. This allows users from different countries to use their own local timezone settings.
 
-Create a file named `.env` in the same folder as `docker-compose.yml`.
+After opening n8n:
 
-Add your timezone:
-
-```env
-GENERIC_TIMEZONE=Asia/Kuala_Lumpur
-```
+1. Open your n8n workflow.
+2. Open the workflow settings.
+3. Find the **Timezone** setting.
+4. Select your local timezone.
 
 Examples:
 
@@ -190,14 +189,9 @@ Examples:
 | London | `Europe/London` |
 | Tokyo | `Asia/Tokyo` |
 
-Make sure your `docker-compose.yml` uses the `GENERIC_TIMEZONE` variable for both `TZ` and `GENERIC_TIMEZONE`.
+Choose the timezone that matches your location.
 
-After changing the timezone, restart n8n:
-
-```bash
-docker compose down
-docker compose up -d
-```
+You do not need to create a `.env` file or change the Docker Compose configuration.
 
 ### Step 4: Install n8n without Docker (Alternative)
 
@@ -400,4 +394,8 @@ Make sure the file is a valid CS2 demo file and that it is placed in the correct
 
 ## License
 
-Add your chosen open-source license here before publishing the project.
+AimTrace is released under the MIT License.
+
+You are free to use, copy, modify, merge, publish, distribute and share this project under the terms of the MIT License.
+
+See the [LICENSE](LICENSE) file for the full license.
